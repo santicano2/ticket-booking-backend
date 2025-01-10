@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"context"
+	"strconv"
 
 	"github.com/santicano2/ticket-booking/models"
 	"gorm.io/gorm"
@@ -14,7 +15,7 @@ type EventRepository struct {
 func (r *EventRepository) GetMany(ctx context.Context) ([]*models.Event, error) {
 	events := []*models.Event{}
 
-	res := r.db.Model(&models.Event{}).Order("updated_at desc").Find(&events)
+	res := r.db.Model(&models.Event{}).Find(&events)
 
 	if res.Error != nil {
 		return nil, res.Error
@@ -23,10 +24,11 @@ func (r *EventRepository) GetMany(ctx context.Context) ([]*models.Event, error) 
 	return events, nil
 }
 
-func (r *EventRepository) GetOne(ctx context.Context, eventId uint) (*models.Event, error) {
+func (r *EventRepository) GetOne(ctx context.Context, eventId string) (*models.Event, error) {
+	id, _ := strconv.Atoi(eventId)
 	event := &models.Event{}
 
-	res := r.db.Model(event).Where("id = ?", eventId).First(event)
+	res := r.db.Model(event).Where("id = ?", uint(id)).First(event)
 
 	if res.Error != nil {
 		return nil, res.Error
@@ -45,16 +47,17 @@ func (r *EventRepository) CreateOne(ctx context.Context, event *models.Event) (*
 	return event, nil
 }
 
-func (r *EventRepository) UpdateOne(ctx context.Context, eventId uint, updateData map[string]interface{}) (*models.Event, error) {
+func (r *EventRepository) UpdateOne(ctx context.Context, eventId string, updateData map[string]interface{}) (*models.Event, error) {
+	id, _ := strconv.Atoi(eventId)
 	event := &models.Event{}
 
-	updateRes := r.db.Model(event).Where("id = ?", eventId).Updates(updateData)
+	updateRes := r.db.Model(event).Where("id = ?", uint(id)).Updates(updateData)
 
 	if updateRes.Error != nil {
 		return nil, updateRes.Error
 	}
 
-	getRes := r.db.Model(event).Where("id = ?", eventId).First(event)
+	getRes := r.db.Model(event).Where("id = ?", uint(id)).First(event)
 
 	if getRes.Error != nil {
 		return nil, getRes.Error
@@ -63,7 +66,7 @@ func (r *EventRepository) UpdateOne(ctx context.Context, eventId uint, updateDat
 	return event, nil
 }
 
-func (r *EventRepository) DeleteOne(ctx context.Context, eventId uint) error {
+func (r *EventRepository) DeleteOne(ctx context.Context, eventId string) error {
 	res := r.db.Delete(&models.Event{}, eventId)
 	return res.Error
 }
