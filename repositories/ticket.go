@@ -54,7 +54,7 @@ func (r *TicketRepository) UpdateOne(ctx context.Context, ticketId uint, updateD
 		return nil, updateRes.Error
 	}
 
-	return r.GetOne(ctx, ticketId)
+	return r.GetOne(ctx, ticket.ID)
 }
 
 func NewTicketRepository(db *gorm.DB) models.TicketRepository {

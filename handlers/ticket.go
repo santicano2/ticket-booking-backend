@@ -126,5 +126,5 @@ func NewTicketHandler(router fiber.Router, repository models.TicketRepository) {
 	router.Get("/", handler.GetMany)
 	router.Post("/", handler.CreateOne)
 	router.Get("/:ticketId", handler.GetOne)
-	router.Put("/validate/:ticketId", handler.ValidateOne)
+	router.Post("/validate", handler.ValidateOne)
 }
