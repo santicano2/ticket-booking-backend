@@ -15,12 +15,8 @@ type Ticket struct {
 }
 
 type TicketRepository interface {
-	GetMany(ctx context.Context, userId uint) ([]*Ticket, error)
-	GetOne(ctx context.Context, userId uint, ticketId uint) (*Ticket, error)
-	CreateOne(ctx context.Context, userId uint, ticket *Ticket) (*Ticket, error)
-	UpdateOne(ctx context.Context, userId uint, ticketId uint, updateData map[string]interface{}) (*Ticket, error)
-}
-
-type ValidateTicket struct {
-	TicketId uint `json:"ticketId"`
+	GetMany(ctx context.Context) ([]*Ticket, error)
+	GetOne(ctx context.Context, ticketId string) (*Ticket, error)
+	CreateOne(ctx context.Context, ticket *Ticket) (*Ticket, error)
+	UpdateOne(ctx context.Context, ticketId string, updateData map[string]interface{}) (*Ticket, error)
 }
