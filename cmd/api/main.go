@@ -7,7 +7,9 @@ import (
 	"github.com/santicano2/ticket-booking/config"
 	"github.com/santicano2/ticket-booking/db"
 	"github.com/santicano2/ticket-booking/handlers"
+	"github.com/santicano2/ticket-booking/middlewares"
 	"github.com/santicano2/ticket-booking/repositories"
+	"github.com/santicano2/ticket-booking/services"
 )
 
 func main() {
@@ -22,13 +24,20 @@ func main() {
 	// Repositories
 	eventRepository := repositories.NewEventRepository(db)
 	ticketRepository := repositories.NewTicketRepository(db)
+	authRepository := repositories.NewAuthRepository(db)
+
+	// Service
+	authService := services.NewAuthService(authRepository)
 
 	// Routing
 	server := app.Group("/api")
+	handlers.NewAuthHandler(server.Group("/auth"), authService)
+
+	privateRoutes := server.Use(middlewares.AuthProtected(db))
 
 	// Handlers
-	handlers.NewEventHandler(server.Group("/event"), eventRepository)
-	handlers.NewTicketHandler(server.Group("/ticket"), ticketRepository)
+	handlers.NewEventHandler(privateRoutes.Group("/event"), eventRepository)
+	handlers.NewTicketHandler(privateRoutes.Group("/ticket"), ticketRepository)
 
 	app.Listen(fmt.Sprintf(":" + envConfig.ServerPort))
 }
