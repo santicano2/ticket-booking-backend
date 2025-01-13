@@ -5,3 +5,4 @@ API for ticket booking app
 ## Stack
 
 - Golang
+- Docker
